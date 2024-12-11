@@ -1,0 +1,13 @@
+google-genai
+python-dotenv
+outetts
+openai-whisper
+transformers
+torch
+google-cloud-aiplatform>=1.38.1
+google-generativeai>=0.3.2
+accelerate
+moviepy
+scipy
+tqdm
+bark
