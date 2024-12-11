@@ -23,9 +23,12 @@ class ShortVideoGenerator:
                 Keep it concise but impactful.
                 **Do not use headers, title etc, Output the script in a way that it can be directly read out, without instructions.**
                 Write in first person. use slang and humor.
-                **IMPORTANT** Use \n after each sentence.
 
-                Use [nervous laughter] or [stutter] to indicate character emotion.
+                **IMPORTANT** Use line break (\\n) after **every single** sentence.
+                Since they are then processed sentence by sentence.
+
+                Use [nervous laughter] [sighs] [gasps] [upbeat music] to add emotion.
+                - or ... for hesitations, capitalization to emphasize words.
                 **Important use [] brackets to indicate character emotion.**
 
                 Example: 
@@ -75,7 +78,8 @@ class ShortVideoGenerator:
         for sentence in sentences:
             if sentence:
                 # Generate audio from text
-                audio_array = generate_audio(sentence)
+                print(f"Generating audio for sentence: {sentence}")
+                audio_array = generate_audio(sentence, history_prompt="v2/en_speaker_6")
                 audio_arrays.append(audio_array)
         
         # Concatenate all audio arrays
