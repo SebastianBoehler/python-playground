@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kokoro TTS Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Kokoro TTS Demo</h1>
+        
+        <div class="mb-6">
+            <label for="voice" class="block text-sm font-medium text-gray-700 mb-2">Select Voice</label>
+            <select id="voice" class="w-full p-2 border rounded-md">
+                <option value="default">Default (Bella & Sarah Mix)</option>
+                <option value="sarah">Sarah (Female American)</option>
+                <option value="george">George (Male British)</option>
+                <option value="bella">Bella (Female American)</option>
+                <option value="michael">Michael (Male American)</option>
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label for="text" class="block text-sm font-medium text-gray-700 mb-2">Enter Text</label>
+            <textarea id="text" rows="4" class="w-full p-2 border rounded-md" 
+                placeholder="Enter the text you want to convert to speech..."></textarea>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <button id="generate" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                Generate Speech
+            </button>
+            <div id="status" class="text-gray-600"></div>
+        </div>
+
+        <div id="audioContainer" class="hidden">
+            <h2 class="text-xl font-semibold mb-3 text-gray-800">Generated Audio</h2>
+            <audio id="audio" controls class="w-full mb-4"></audio>
+            <div class="bg-gray-50 p-4 rounded-md">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Phonemes:</h3>
+                <pre id="phonemes" class="text-sm text-gray-600 whitespace-pre-wrap"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate').addEventListener('click', async () => {
+            const text = document.getElementById('text').value;
+            const voice = document.getElementById('voice').value;
+            const statusEl = document.getElementById('status');
+            const audioContainer = document.getElementById('audioContainer');
+            const audioEl = document.getElementById('audio');
+            const phonemesEl = document.getElementById('phonemes');
+
+            if (!text) {
+                alert('Please enter some text');
+                return;
+            }
+
+            try {
+                statusEl.textContent = 'Generating audio...';
+                const response = await fetch('http://localhost:8000/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text,
+                        voice,
+                        language: voice === 'george' ? 'b' : 'a'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Convert base64 to audio
+                const audioSrc = `data:audio/wav;base64,${data.audio}`;
+                audioEl.src = audioSrc;
+                
+                // Display phonemes
+                phonemesEl.textContent = data.phonemes;
+                
+                // Show audio container
+                audioContainer.classList.remove('hidden');
+                statusEl.textContent = 'Generation complete!';
+
+                // Auto-play
+                audioEl.play();
+            } catch (error) {
+                console.error('Error:', error);
+                statusEl.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

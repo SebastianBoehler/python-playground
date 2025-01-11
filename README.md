@@ -25,6 +25,12 @@ This repository contains various Python projects and experiments with AI and mul
   - Voice customization using history prompts (e.g., "v2/en_speaker_6")
   - Sentence-by-sentence processing for handling long texts
   - Sample rate: 24kHz
+- **kokoro/**: FastAPI server with Kokoro TTS model
+  - Dockerized implementation available on Docker Hub (`sebastianboehler/kokoro-tts`)
+  - Multiple voice options (Sarah, George, Bella, Michael)
+  - Web UI for easy text-to-speech conversion
+  - RESTful API for programmatic access
+  - Based on [Kokoro-82M model](https://huggingface.co/hexgrad/Kokoro-82M)
 - **outetts/**: Previous implementation using OuteTTS model
   - Basic text-to-speech capabilities
   - Speaker profile customization

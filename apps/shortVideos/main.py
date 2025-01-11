@@ -27,12 +27,12 @@ class ShortVideoGenerator:
                 **IMPORTANT** Use line break (\\n) after **every single** sentence.
                 Since they are then processed sentence by sentence.
 
-                Use [nervous laughter] [sighs] [gasps] [upbeat music] to add emotion.
+                Use [laughs] [sighs] [gasps] [music] [clears throat] to add emotion.
                 - or ... for hesitations, capitalization to emphasize words.
                 **Important use [] brackets to indicate character emotion.**
 
                 Example: 
-                I recently ran into my ex girlfriend - uhm. She told me that she got gay after we had sex for the first time. [nervous laughter]
+                I recently ran into my ex girlfriend - uhm ... She told me that she became gay after we had SEX for the first time. [sighs]
             """]
         )
         
@@ -70,6 +70,11 @@ class ShortVideoGenerator:
     # can only take in a string of certain length, otherwise exceeds the max audio time output
     def create_speech(self, text):
         """Convert text to speech using Bark TTS."""
+        # Remove any existing audio file
+        audio_path = "speech.wav"
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+        
         # Split text into sentences using newlines
         sentences = [s.strip() for s in text.split('\n') if s.strip()]
         
@@ -77,6 +82,11 @@ class ShortVideoGenerator:
         audio_arrays = []
         for sentence in sentences:
             if sentence:
+                # Remove \n from the sentence
+                sentence = sentence.replace('\\n', '')
+                sentence = sentence.replace('\n', '')
+                sentence = sentence.replace('\\', '')
+                
                 # Generate audio from text
                 print(f"Generating audio for sentence: {sentence}")
                 audio_array = generate_audio(sentence, history_prompt="v2/en_speaker_6")
@@ -86,8 +96,15 @@ class ShortVideoGenerator:
         combined_audio = np.concatenate(audio_arrays)
         
         # Save to a file
-        audio_path = "speech.wav"
         write_wav(audio_path, SAMPLE_RATE, combined_audio)
+        
+        # Verify the file exists and is not empty
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Failed to create audio file: {audio_path}")
+        
+        if os.path.getsize(audio_path) == 0:
+            raise ValueError(f"Generated audio file is empty: {audio_path}")
+        
         return audio_path
     
     def transcribe_with_timestamps(self, audio_path):
